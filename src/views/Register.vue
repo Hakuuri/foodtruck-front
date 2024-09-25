@@ -114,7 +114,7 @@ const isValidEmailDomain = (email) => {
   return validDomains.some((domain) => email.endsWith(domain));
 };  
  // Function to handle form submission
-const submitForm = () => {
+const submitForm = async () => {
   // Check if email domain is valid
   if (!isValidEmailDomain(email.value)) {
     errorMessage.value = "L'email doit être '@ecoles-epsi.net' ou '@ecoles-wiz.net'";
@@ -125,18 +125,66 @@ const submitForm = () => {
   } else if (!isValidBirthDate(birthDate.value)) {
     errorMessage.value = "La date de naissance ne peut pas être aujourd'hui ni dans le futur";
   } else {
-    errorMessage.value = '';
-    // API call or registration logic
-    console.log({
+    errorMessage.value = ''; 
+   
+    const formData = {
       username: username.value,
       email: email.value,
       phone: phone.value,
       birthDate: birthDate.value,
       password: password.value,
-    });
-    alert('Inscription réussie!');
+    };
+    
+
+// Helper function to write data to the JSON file
+const writeDataToFile = (data) => {
+  try {
+    fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Error writing to JSON file:', err);
   }
 };
+
+
+
+    try {
+      // Send POST request to the backend
+      const response = await fetch('http://localhost:8081/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Registration successful:', result);
+        alert('Inscription réussie!');
+      } else {
+        const error = await response.json();
+        errorMessage.value = error.message || 'Une erreur est survenue';
+      }
+    } catch (error) {
+      errorMessage.value = 'Erreur lors de la soumission du formulaire';
+      console.error('Error:', error);
+    }
+  }
+};
+   
+   
+   
+    // // API call or registration logic
+    // console.log({
+    //   username: username.value,
+    //   email: email.value,
+    //   phone: phone.value,
+    //   birthDate: birthDate.value,
+    //   password: password.value,
+    // });
+    // alert('Inscription réussie!');
+  
+
   </script>
   
   <style scoped>
