@@ -18,7 +18,7 @@
         <div class="form-group">
           <label for="email">Email</label>
           <input
-            type="email"
+            type="text"
             id="email"
             v-model="email"
             required
@@ -30,7 +30,7 @@
         <div class="form-group">
           <label for="phone">N° de téléphone</label>
           <input
-            type="tel"
+            type="number"
             id="phone"
             v-model="phone"
             required
@@ -104,16 +104,15 @@ const isValidBirthDate = (birthDate) => {
     return false;
   }
   
-  // Additional check can be added here if needed (e.g., minimum age)
   return true;
 };
 
-  // Function to check if the email domain is valid
+  //  check if the email domain is valid
 const isValidEmailDomain = (email) => {
   const validDomains = ["@ecoles-epsi.net", "@ecoles-wiz.net"];
   return validDomains.some((domain) => email.endsWith(domain));
 };  
- // Function to handle form submission
+ // handle form submission
 const submitForm = async () => {
   // Check if email domain is valid
   if (!isValidEmailDomain(email.value)) {
@@ -125,66 +124,33 @@ const submitForm = async () => {
   } else if (!isValidBirthDate(birthDate.value)) {
     errorMessage.value = "La date de naissance ne peut pas être aujourd'hui ni dans le futur";
   } else {
-    errorMessage.value = ''; 
-   
-    const formData = {
+    errorMessage.value = '';
+    // API call or registration logic
+    console.log({
       username: username.value,
       email: email.value,
       phone: phone.value,
       birthDate: birthDate.value,
       password: password.value,
-    };
+    });
     
-
-// Helper function to write data to the JSON file
-const writeDataToFile = (data) => {
-  try {
-    fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Error writing to JSON file:', err);
+    await fetch("http://localhost:8081/register",
+{
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: "POST",
+    body: JSON.stringify({username: username.value,
+      email: email.value,
+      phone: phone.value,
+      birthDate: birthDate.value,
+      password: password.value})
+})
+.then(function(res){ alert('Inscription réussie!'); })
+.catch(function(res){ alert(' erreur Inscription ');  })
   }
 };
-
-
-
-    try {
-      // Send POST request to the backend
-      const response = await fetch('http://localhost:8081/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Registration successful:', result);
-        alert('Inscription réussie!');
-      } else {
-        const error = await response.json();
-        errorMessage.value = error.message || 'Une erreur est survenue';
-      }
-    } catch (error) {
-      errorMessage.value = 'Erreur lors de la soumission du formulaire';
-      console.error('Error:', error);
-    }
-  }
-};
-   
-   
-   
-    // // API call or registration logic
-    // console.log({
-    //   username: username.value,
-    //   email: email.value,
-    //   phone: phone.value,
-    //   birthDate: birthDate.value,
-    //   password: password.value,
-    // });
-    // alert('Inscription réussie!');
-  
-
   </script>
   
   <style scoped>
