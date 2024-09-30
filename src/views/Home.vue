@@ -1,7 +1,6 @@
 <template>
     <div class="home">
       <h1>Welcome to la Home Page</h1>
-      <p>plus qu'a faire du code</p>
     </div>
   </template>
   
